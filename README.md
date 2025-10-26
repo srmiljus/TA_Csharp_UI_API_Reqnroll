@@ -79,7 +79,7 @@ allure open allure-report
 * Page Object Model (**POM**) for clean, maintainable UI tests
 * Reqnroll Hooks for driver, context, and test lifecycle management
 * Integrated Allure.Reqnroll for rich BDD reporting
-* Supports test categorization (Smoke, Regression, E2E, API)
+* Supports test categorization (Smoke, Regression, UI, API)
 * GitHub Actions pipeline for continuous testing and reporting
 
 ---
