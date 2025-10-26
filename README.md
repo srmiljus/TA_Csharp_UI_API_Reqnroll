@@ -1,4 +1,4 @@
-﻿# 🧩 TA_Csharp_Selenium_RestSharp
+﻿# TA_Csharp_Selenium_RestSharp
 
 Modern **Test Automation Framework** built with **C# (.NET 8)** — combining
 **Selenium WebDriver** for UI testing, **RestSharp** for API testing, and **Reqnroll** (SpecFlow-style) for BDD scenarios.
