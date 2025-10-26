@@ -1,0 +1,85 @@
+name: .NET Reqnroll Automation Tests
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: "Select which tests to run"
+        required: true
+        default: "All"
+        type: choice
+        options:
+          - UI
+          - API
+          - All
+      browser:
+        description: "Select browser"
+        required: true
+        default: "Chrome"
+        type: choice
+        options:
+          - Chrome
+          - Edge
+          - Both
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run tests with Allure.Reqnroll
+        run: |
+          echo "Running tests for: ${{ github.event.inputs.test_type }}"
+          if [ "${{ github.event.inputs.test_type }}" = "UI" ]; then
+            dotnet test UI_Automation --logger "trx;LogFileName=ui-tests.trx"
+          elif [ "${{ github.event.inputs.test_type }}" = "API" ]; then
+            dotnet test API_Automation --logger "trx;LogFileName=api-tests.trx"
+          else
+            dotnet test --logger "trx;LogFileName=all-tests.trx"
+          fi
+
+      #  Generate Allure HTML report (using simple-elf action)
+      - name: Generate Allure HTML Report
+        uses: simple-elf/allure-report-action@v1.8
+        if: always()
+        with:
+          allure_results: |
+            UI_Automation/allure-results
+            API_Automation/allure-results
+          allure_report: allure-report
+          keep_reports: 5
+
+      #  Upload generated Allure HTML report
+      - name: Upload Allure HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-html-report
+          path: allure-report
+
+      #  Upload raw Allure results (for local serve)
+      - name: Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: |
+            UI_Automation/allure-results/**
+            API_Automation/allure-results/**
