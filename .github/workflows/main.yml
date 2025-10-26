@@ -30,25 +30,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      #  Checkout source
       - name: Checkout code
         uses: actions/checkout@v4
 
-      #  Setup .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
 
-      #  Restore dependencies
       - name: Restore dependencies
         run: dotnet restore
 
-      #  Build solution
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
 
-      #  Run tests (Allure.Reqnroll will automatically generate allure-results & allure-report)
       - name: Run tests with Allure.Reqnroll
         run: |
           echo "Running tests for: ${{ github.event.inputs.test_type }}"
@@ -60,17 +55,26 @@ jobs:
             dotnet test --logger "trx;LogFileName=all-tests.trx"
           fi
 
-      #  Upload Allure Reports (UI + API)
-      - name: Upload Allure Reports
+      #  Generate Allure HTML report (using simple-elf action)
+      - name: Generate Allure HTML Report
+        uses: simple-elf/allure-report-action@v1.8
+        if: always()
+        with:
+          allure_results: |
+            UI_Automation/allure-results
+            API_Automation/allure-results
+          allure_report: allure-report
+          keep_reports: 5
+
+      #  Upload generated Allure HTML report
+      - name: Upload Allure HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-reports
-          path: |
-            UI_Automation/allure-report/**
-            API_Automation/allure-report/**
+          name: allure-html-report
+          path: allure-report
 
-      #  Upload Allure Results (raw JSONs)
+      #  Upload raw Allure results (for local serve)
       - name: Upload Allure Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -79,11 +83,3 @@ jobs:
           path: |
             UI_Automation/allure-results/**
             API_Automation/allure-results/**
-
-      #  Upload TRX Results
-      - name: Upload TRX Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: trx-results
-          path: "**/TestResults/*.trx"
