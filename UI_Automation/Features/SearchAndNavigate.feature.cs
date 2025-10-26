@@ -108,10 +108,12 @@ namespace UI_Automation.Features
         
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("Search for Steam game and navigate to the About page")]
+        [global::NUnit.Framework.CategoryAttribute("ui")]
         [global::NUnit.Framework.CategoryAttribute("regression")]
         public async global::System.Threading.Tasks.Task SearchForSteamGameAndNavigateToTheAboutPage()
         {
             string[] tagsOfScenario = new string[] {
+                    "ui",
                     "regression"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";

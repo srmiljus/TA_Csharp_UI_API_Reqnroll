@@ -7,13 +7,14 @@ namespace UI_Automation.Pages
         private readonly IWebDriver _driver;
         private readonly IJavaScriptExecutor _jsExecutor;
 
-        // Locators
+        #region Locators
+
         private IWebElement SearchBox => _driver.FindElement(By.XPath("//input[@class='_2tlUAG6WNyYFlk9caIiLj5']"));
         private IList<IWebElement> SearchResults => _driver.FindElements(By.CssSelector(".search_result_row"));
         private IWebElement GameNameHeading => _driver.FindElement(By.Id("appHubAppName"));
         private IWebElement PlayGameButton => _driver.FindElement(By.Id("freeGameBtn"));
         private IWebElement NoINeedSteamButton => _driver.FindElement(By.XPath("//h3[contains(text(),'No, I need Steam')]"));
-
+        #endregion
 
         public StorePage(IWebDriver driver)
         {
@@ -21,7 +22,8 @@ namespace UI_Automation.Pages
             _jsExecutor = (IJavaScriptExecutor)driver;
         }
 
-        // Actions
+        #region Actions
+        
 
         public void SearchForGame(string gameName)
         {
@@ -76,4 +78,5 @@ namespace UI_Automation.Pages
             _jsExecutor.ExecuteScript("window.scrollBy(0," + linkYPositionShift + ");");
         }
     }
+    #endregion
 }
