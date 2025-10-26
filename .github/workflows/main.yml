@@ -55,21 +55,39 @@ jobs:
             dotnet test --logger "trx;LogFileName=all-tests.trx"
           fi
 
+      #  Generate Allure Report
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@v1.8
+        if: always()
+        with:
+          allure_results: "**/allure-results"
+          allure_report: "allure-report"
+          keep_reports: 5
+
+      #  Upload Allure Report
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
+
+      #  Generate standard HTML report from TRX
       - name: Generate HTML Report
         run: |
-          dotnet tool install -g trx2html
-          trx2html -i **/TestResults/all-tests.trx -o TestResults/report.html
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator '-reports:**/TestResults/*.trx' '-targetdir:TestResults/report' '-reporttypes:Html'
 
+      #  Upload HTML Report
       - name: Upload HTML Report
         uses: actions/upload-artifact@v4
         with:
           name: html-report
-          path: TestResults/report.html
+          path: TestResults/report
 
+      #  Upload TRX Results
       - name: Upload TRX Report (optional)
         uses: actions/upload-artifact@v4
         with:
-         name: trx-results
-         path: |
-          **/TestResults/*.trx
-
+          name: trx-results
+          path: |
+            **/TestResults/*.trx
