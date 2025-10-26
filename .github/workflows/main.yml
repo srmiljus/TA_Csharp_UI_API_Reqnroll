@@ -30,21 +30,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout source code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Setup .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
+      # Install Allure.Reqnroll tool globally so "logger Allure" is recognized
+      - name: Install Allure Reqnroll logger
+        run: dotnet tool install --global "Allure.Reqnroll"
+
+      # Restore dependencies
       - name: Restore dependencies
         run: dotnet restore
 
+      # Build the solution
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
 
-      # Run tests and let Allure.Reqnroll generate allure-results + allure-report
+      # Run tests (Allure logger will generate allure-results & allure-report)
       - name: Run tests with Allure.Reqnroll
         run: |
           echo "Running tests for: ${{ github.event.inputs.test_type }}"
@@ -56,7 +64,7 @@ jobs:
             dotnet test --logger "trx;LogFileName=all-tests.trx" --logger "Allure"
           fi
 
-      # Upload Allure reports (UI and API)
+      # Upload Allure Reports (from both UI & API projects)
       - name: Upload Allure Reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -66,7 +74,7 @@ jobs:
             UI_Automation/allure-report/**
             API_Automation/allure-report/**
 
-      # Upload Allure results (raw data)
+      # Upload Allure Results (raw JSON for manual rebuild if needed)
       - name: Upload Allure Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -76,11 +84,10 @@ jobs:
             UI_Automation/allure-results/**
             API_Automation/allure-results/**
 
-      # Upload TRX files for debugging (optional)
+      # Upload TRX logs (for optional Azure or debugging)
       - name: Upload TRX Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trx-results
-          path: |
-            **/TestResults/*.trx
+          path: "**/TestResults/*.trx"
