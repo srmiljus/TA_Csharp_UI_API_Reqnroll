@@ -1,26 +1,30 @@
 name: .NET Reqnroll Automation Tests
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
     inputs:
       test_type:
-        description: "Select which tests to run"
+        description: 'Select which tests to run'
         required: true
-        default: "All"
+        default: 'All'
         type: choice
         options:
-          - API
           - UI
+          - API
           - All
       browser:
-        description: "Select browser"
+        description: 'Select browser'
         required: true
-        default: "Chrome"
+        default: 'Chrome'
         type: choice
         options:
           - Chrome
           - Edge
           - Both
+
 
 jobs:
   build-and-test:
@@ -72,9 +76,10 @@ jobs:
       - name: Upload Allure Report
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report
-          path: |
-           **/allure-report/**
-           **/allure-results/**
-          if-no-files-found: warn
+         name: allure-report
+         path: |
+          allure-report
+          allure-results
+         if-no-files-found: warn
+
 
