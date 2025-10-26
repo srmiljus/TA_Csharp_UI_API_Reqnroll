@@ -1,0 +1,77 @@
+name: .NET Reqnroll Automation Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: "Select which tests to run"
+        required: true
+        default: "All"
+        type: choice
+        options:
+          - API
+          - UI
+          - All
+      browser:
+        description: "Select browser"
+        required: true
+        default: "Chrome"
+        type: choice
+        options:
+          - Chrome
+          - Edge
+          - Both
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run tests with selected filters
+        run: |
+          echo "Running tests for type: ${{ github.event.inputs.test_type }} on browser: ${{ github.event.inputs.browser }}"
+          
+          if [ "${{ github.event.inputs.test_type }}" == "API" ]; then
+            dotnet test ./API_Automation/API_Automation.csproj --filter "Category=API" --logger "trx;LogFileName=api-tests.trx"
+          elif [ "${{ github.event.inputs.test_type }}" == "UI" ]; then
+            dotnet test ./UI_Automation/UI_Automation.csproj --filter "Category=UI" --logger "trx;LogFileName=ui-tests.trx"
+          else
+            dotnet test --logger "trx;LogFileName=all-tests.trx"
+          fi
+
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            **/*.trx
+            **/TestResults/
+
+      - name: Allure Report Generation
+        uses: simple-elf/allure-report-action@v1.8
+        if: always()
+        with:
+          allure_results: "**/allure-results"
+          allure_report: "**/allure-report"
+          keep_reports: 5
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/
