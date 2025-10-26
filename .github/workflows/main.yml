@@ -44,48 +44,41 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
 
-      - name: Run tests with selected filters
+      # Run tests and let Allure.Reqnroll generate allure-results + allure-report
+      - name: Run tests with Allure.Reqnroll
         run: |
           echo "Running tests for: ${{ github.event.inputs.test_type }}"
           if [ "${{ github.event.inputs.test_type }}" = "UI" ]; then
-            dotnet test UI_Automation --logger "trx;LogFileName=all-tests.trx"
+            dotnet test UI_Automation --logger "trx;LogFileName=ui-tests.trx" --logger "Allure"
           elif [ "${{ github.event.inputs.test_type }}" = "API" ]; then
-            dotnet test API_Automation --logger "trx;LogFileName=all-tests.trx"
+            dotnet test API_Automation --logger "trx;LogFileName=api-tests.trx" --logger "Allure"
           else
-            dotnet test --logger "trx;LogFileName=all-tests.trx"
+            dotnet test --logger "trx;LogFileName=all-tests.trx" --logger "Allure"
           fi
 
-      #  Generate Allure Report
-      - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@v1.8
+      # Upload Allure reports (UI and API)
+      - name: Upload Allure Reports
         if: always()
-        with:
-          allure_results: "**/allure-results"
-          allure_report: "allure-report"
-          keep_reports: 5
-
-      #  Upload Allure Report
-      - name: Upload Allure Report
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report
-          path: allure-report
+          name: allure-reports
+          path: |
+            UI_Automation/allure-report/**
+            API_Automation/allure-report/**
 
-      #  Generate standard HTML report from TRX
-      - name: Generate HTML Report
-        run: |
-          dotnet tool install -g dotnet-reportgenerator-globaltool
-          reportgenerator '-reports:**/TestResults/*.trx' '-targetdir:TestResults/report' '-reporttypes:Html'
-
-      #  Upload HTML Report
-      - name: Upload HTML Report
+      # Upload Allure results (raw data)
+      - name: Upload Allure Results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: html-report
-          path: TestResults/report
+          name: allure-results
+          path: |
+            UI_Automation/allure-results/**
+            API_Automation/allure-results/**
 
-      #  Upload TRX Results
-      - name: Upload TRX Report (optional)
+      # Upload TRX files for debugging (optional)
+      - name: Upload TRX Results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trx-results
