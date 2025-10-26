@@ -19,7 +19,7 @@ namespace API_Automation.Client
             var options = new RestClientOptions(baseUrl)
             {
                 ThrowOnAnyError = false,
-                MaxTimeout = timeoutSeconds * 1000  // Convert seconds to milliseconds
+                MaxTimeout = timeoutSeconds * 1000 
             };
             _client = new RestClient(options);
         }

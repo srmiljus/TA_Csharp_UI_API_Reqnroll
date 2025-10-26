@@ -9,9 +9,5 @@ namespace API_Automation.Models.Response
 
         [JsonProperty("username")]
         public string Username { get; set; }
-
-        [JsonProperty("books")]
-        public List<object> Books { get; set; }
     }
 }
-
