@@ -1,10 +1,7 @@
 <Solution>
-  <Folder Name="/.github/" />
-  <Folder Name="/.github/workflows/">
-    <File Path="automation-tests.yml" />
-  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
+    <File Path="README.md" />
   </Folder>
   <Project Path="API_Automation/API_Automation.csproj" />
   <Project Path="UI_Automation/UI_Automation.csproj" />
