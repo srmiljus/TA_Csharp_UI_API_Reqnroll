@@ -1,0 +1,80 @@
+name: Automation Test Pipeline (.NET + Reqnroll + Allure)
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Select which tests to run'
+        required: true
+        type: choice
+        options:
+          - UI
+          - API
+          - All
+      browser:
+        description: 'Select browser'
+        required: true
+        type: choice
+        options:
+          - Chrome
+          - Edge
+          - Both
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    env:
+      DOTNET_VERSION: 8.0.x
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore Csharp_Automation_Task.sln
+
+      - name: Build solution
+        run: dotnet build Csharp_Automation_Task.sln --configuration Release --no-restore
+
+      # ==========================
+      # Run UI / API / All tests
+      # ==========================
+      - name: Run Tests
+        run: |
+          if ("${{ github.event.inputs.test_type }}" -eq "UI") {
+            dotnet test UI_Automation/UI_Automation.csproj --configuration Release --filter "ReqnrollTags=@ui" --logger "trx;LogFileName=ui-results.trx"
+          }
+          elseif ("${{ github.event.inputs.test_type }}" -eq "API") {
+            dotnet test API_Automation/API_Automation.csproj --configuration Release --filter "ReqnrollTags=@api" --logger "trx;LogFileName=api-results.trx"
+          }
+          else {
+            dotnet test Csharp_Automation_Task.sln --configuration Release --logger "trx;LogFileName=all-results.trx"
+          }
+
+      # ==========================
+      # Run Allure Report
+      # ==========================
+      - name: Generate Allure Results
+        if: always()
+        run: |
+          echo "Allure results generated in allure-results/"
+          dir allure-results || echo "No allure results folder found"
+
+      - name: Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results/
+
+      - name: Upload TRX Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-test-results
+          path: '**/*.trx'

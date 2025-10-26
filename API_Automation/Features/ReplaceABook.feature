@@ -1,4 +1,4 @@
-﻿@api
+﻿@api @smoke
 Feature: Replace a book via Bookstore API
 
   Scenario: Verify that a user can replace a book

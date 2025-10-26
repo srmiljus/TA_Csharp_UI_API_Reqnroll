@@ -4,7 +4,7 @@
   I want to search for game and navigate to the official Steam About page
   So that I can play games on the Steam platform
 
-@regression
+@ui @regression
 Scenario: Search for Steam game and navigate to the About page
 	Given I open Store page
 	When I search for "FIFA" game
