@@ -1,26 +1,125 @@
-# Build folders
-bin/
-obj/
+##################################
+# .NET build artifacts
+##################################
+**/bin/
+**/obj/
+**/out/
+artifacts/
+publish/
 
-# Allure outputs
-allure-results/
-allure-report/
+##################################
+# Test results
+##################################
+**/TestResults/
+**/*.trx
+**/*.coverage
+**/*.coveragexml
+coverage.opencover.xml
+coverage.xml
 
-# Visual Studio
+##################################
+# Allure
+##################################
+**/allure-results/
+**/allure-report/
+**/allure-history/
+
+##################################
+# Selenium / Playwright artifacts
+##################################
+**/Screenshots/
+**/screenshots/
+**/Videos/
+**/videos/
+**/Downloads/
+**/downloads/
+**/*.png
+**/*.jpg
+**/*.jpeg
+
+##################################
+# Logs
+##################################
+**/*.log
+**/logs/
+
+##################################
+# Environment / secrets
+##################################
+**/.env
+**/.env.*
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+**/secrets.json
+**/appsettings.Secret.json
+
+##################################
+# IDE / OS
+##################################
 .vs/
+.idea/
+.vscode/
 *.user
 *.suo
-*.cache
-*.nupkg
-
-# Test results
-TestResult*/
-*.trx
-
-# OS junk
-Thumbs.db
+*.userprefs
+*.rsuser
+*.swp
 .DS_Store
+Thumbs.db
 
-# Logs
+##################################
+# NuGet
+##################################
+*.nupkg
+.nuget/
+packages/
+
+##################################
+# Rider
+##################################
+.idea/
+*.sln.iml
+
+##################################
+# Resharper
+##################################
+_ReSharper*/
+*.DotSettings.user
+
+##################################
+# Node (ako koristiš npx / allure-commandline)
+##################################
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+
+##################################
+# CI / temp
+##################################
+**/temp/
+**/tmp/
+
+##################################
+# Misc build files
+##################################
+project.lock.json
+project.fragment.lock.json
+project.assets.json
 *.log
-*.tmp
+*.vsix
+
+##################################
+# Coverage and profiling
+##################################
+*.coverage
+*.coveragexml
+coverage/
+
+##################################
+# Visual Studio Code workspace settings
+##################################
+.vscode/*
+!.vscode/extensions.json
+
+# End of file

@@ -19,7 +19,7 @@ namespace UI_Automation.StepDefinitions
         public SearchAndNavigateStepDefinitions(IWebDriver driver, StorePage storePage, AboutPage aboutPage, ScenarioContext scenarioContext)
         {
             _driver = driver;
-            _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            _wait = new WebDriverWait(_driver, TimeSpan.Zero);
             _config = Config.Load();
             _storePage = storePage;
             _aboutPage = aboutPage;
@@ -66,12 +66,20 @@ namespace UI_Automation.StepDefinitions
         }
 
         [Then("I should be redirected to the {string} page")]
-       
         public void ThenIShouldBeRedirectedToThePage(string pageUrl)
         {
+            try
+            {
+                _wait.Until(d => d.Url.Contains(pageUrl));
+            }
+            catch (WebDriverTimeoutException ex)
+            {
+                Assert.Fail($"Expected to be redirected to URL containing '{pageUrl}' within 10s. " +
+                            $"Actual URL was '{_driver.Url}'. Timeout: {ex.Message}");
+            }
 
-            _wait.Until(driver => driver.Url.Contains(pageUrl));
-            Assert.That(_storePage.GetPageUrl(), Does.Contain(pageUrl), $"Expected to be redirected to the page containing '{pageUrl}'");
+            Assert.That(_driver.Url, Does.Contain(pageUrl),
+                $"Expected to be redirected to the page containing '{pageUrl}'");
             Logger.Log($"Verified redirection to the page: {pageUrl}");
         }
 

@@ -1,16 +1,16 @@
 ﻿@regression
 @allure.epic:SteamWebInterface
-@allure.feature:Search
+@allure.feature:CopyPaste
 @allure.owner:Srdjan_Miljus
 @allure.severity:critical
-Feature: Search and navigate
+Feature: Copy and paste
 
   As a user
   I want to search for game and navigate to the official Steam About page
   So that I can play games on the Steam platform
 
 @ui 
-Scenario: Search for Steam game and navigate to the About page
+Scenario: Copy
 	Given I open Store page
 	When I search for "FIFA" game
 	Then I should see the first search result "EA SPORTS FC™ 25"
@@ -26,7 +26,7 @@ Scenario: Search for Steam game and navigate to the About page
 	And I should see that Playing Now gamers status are less than Online gamers status
 
 @ui 
-Scenario: Navigate to the About page
+Scenario: Paste
 	Given I open Store page
 	When I search for "THE FINALS" game
 	And I click on the first search result in the search results
@@ -39,7 +39,7 @@ Scenario: Navigate to the About page
 	And I should see that Playing Now gamers status are less than Online gamers status
 
 @ui 
-Scenario: About page
+Scenario: Cut
 	Given I open Store page
 	When I search for "THE FINALS" game
 	And I click on the first search result in the search results
