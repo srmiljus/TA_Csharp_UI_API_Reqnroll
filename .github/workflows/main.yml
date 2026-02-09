@@ -55,14 +55,29 @@ jobs:
             dotnet test --logger "trx;LogFileName=all-tests.trx"
           fi
 
+      - name: Merge Allure results
+        if: always()
+        run: |
+          echo "Merging allure-results from projects"
+          rm -rf allure-results || true
+          mkdir -p allure-results
+          if [ -d UI_Automation/allure-results ]; then
+            cp -r UI_Automation/allure-results/* allure-results/ || true
+          fi
+          if [ -d API_Automation/allure-results ]; then
+            cp -r API_Automation/allure-results/* allure-results/ || true
+          fi
+          echo "Allure results files:"
+          ls -la allure-results || true
+
+
       #  Generate Allure HTML report (using simple-elf action)
       - name: Generate Allure HTML Report
         uses: simple-elf/allure-report-action@v1.8
         if: always()
         with:
           allure_results: |
-            UI_Automation/allure-results
-            API_Automation/allure-results
+            allure-results
           allure_report: allure-report
           keep_reports: 5
 
@@ -81,5 +96,4 @@ jobs:
         with:
           name: allure-results
           path: |
-            UI_Automation/allure-results/**
-            API_Automation/allure-results/**
+            allure-results/**
