@@ -180,7 +180,7 @@ namespace UI_Automation.Features
                 await testRunner.AndAsync("I should see the game name \"THE FINALS\" from the 1st search result", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
                 await testRunner.WhenAsync("I click on Play Game button", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
                 await testRunner.AndAsync("I click on No, I need Steam button", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-                await testRunner.ThenAsync("I should be redirected to the \"adout\" page", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+                await testRunner.ThenAsync("I should be redirected to the \"about\" page", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
                 await testRunner.AndAsync("I should see the Install Steam button is clickable", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
                 await testRunner.AndAsync("I should see that Playing Now gamers status are less than Online gamers status", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
             }

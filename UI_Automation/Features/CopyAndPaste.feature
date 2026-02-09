@@ -34,7 +34,7 @@ Scenario: Paste
 	And I should see the game name "THE FINALS" from the 1st search result
 	When I click on Play Game button
 	And I click on No, I need Steam button
-	Then I should be redirected to the "adout" page
+	Then I should be redirected to the "about" page
 	And I should see the Install Steam button is clickable
 	And I should see that Playing Now gamers status are less than Online gamers status
 
