@@ -15,8 +15,8 @@ using UI_Automation.Support;
 
 //[assembly: Parallelizable(ParallelScope.Self | ParallelScope.Children)]
 //[assembly: Parallelizable(ParallelScope.Fixtures)]
-[assembly: Parallelizable(ParallelScope.All)]
-[assembly: LevelOfParallelism(2)]
+//[assembly: Parallelizable(ParallelScope.All)]
+//[assembly: LevelOfParallelism(2)]
 
 namespace UI_Automation.Setup
 {
