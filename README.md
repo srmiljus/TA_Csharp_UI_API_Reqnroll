@@ -136,4 +136,4 @@ Example snippet from workflow:
 
 ---
 
-👤 **Author:** *Srdjan Miljus — Senior QA Automation Arc
+👤 **Author:** *Srdjan Miljus — Senior QA Automation Architect
