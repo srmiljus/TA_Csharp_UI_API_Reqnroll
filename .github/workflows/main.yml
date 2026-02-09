@@ -29,6 +29,11 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    env:
+      # Default values for push runs (workflow_dispatch has inputs, push doesn't)
+      TEST_TYPE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.test_type || 'All' }}
+      BROWSER:   ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.browser   || 'Chrome' }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -44,56 +49,83 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
 
-      - name: Run tests with Allure.Reqnroll
+      - name: Run tests
         run: |
-          echo "Running tests for: ${{ github.event.inputs.test_type }}"
-          if [ "${{ github.event.inputs.test_type }}" = "UI" ]; then
-            dotnet test UI_Automation --logger "trx;LogFileName=ui-tests.trx"
-          elif [ "${{ github.event.inputs.test_type }}" = "API" ]; then
-            dotnet test API_Automation --logger "trx;LogFileName=api-tests.trx"
+          echo "Running tests for: $TEST_TYPE"
+          echo "Browser: $BROWSER"
+
+          if [ "$TEST_TYPE" = "UI" ]; then
+            dotnet test UI_Automation --configuration Release --logger "trx;LogFileName=ui-tests.trx"
+          elif [ "$TEST_TYPE" = "API" ]; then
+            dotnet test API_Automation --configuration Release --logger "trx;LogFileName=api-tests.trx"
           else
-            dotnet test --logger "trx;LogFileName=all-tests.trx"
+            dotnet test --configuration Release --logger "trx;LogFileName=all-tests.trx"
           fi
 
-      - name: Merge Allure results
+      # Merge Allure results from anywhere in the repo into one folder
+      - name: Collect Allure results
         if: always()
+        shell: bash
         run: |
-          echo "Merging allure-results from projects"
+          echo "Collecting allure-results..."
           rm -rf allure-results || true
           mkdir -p allure-results
-          if [ -d UI_Automation/allure-results ]; then
-            cp -r UI_Automation/allure-results/* allure-results/ || true
-          fi
-          if [ -d API_Automation/allure-results ]; then
-            cp -r API_Automation/allure-results/* allure-results/ || true
-          fi
-          echo "Allure results files:"
+
+          # Find any allure-results folders (Reqnroll/Allure can put them under bin/... or project root)
+          mapfile -t dirs < <(find . -type d -name "allure-results" -not -path "./allure-results" 2>/dev/null || true)
+
+          echo "Found allure-results dirs:"
+          printf '%s\n' "${dirs[@]}"
+
+          for d in "${dirs[@]}"; do
+            echo "Copying from: $d"
+            cp -r "$d"/. allure-results/ 2>/dev/null || true
+          done
+
+          echo "Final allure-results content:"
           ls -la allure-results || true
 
+          # Create a flag so next steps can decide whether to generate report
+          if [ -n "$(ls -A allure-results 2>/dev/null)" ]; then
+            echo "HAS_ALLURE_RESULTS=true" >> $GITHUB_ENV
+          else
+            echo "HAS_ALLURE_RESULTS=false" >> $GITHUB_ENV
+          fi
 
-      #  Generate Allure HTML report (using simple-elf action)
-      - name: Generate Allure HTML Report
-        uses: simple-elf/allure-report-action@v1.8
+      # Generate Allure HTML report WITHOUT Docker
+      - name: Setup Node
         if: always()
+        uses: actions/setup-node@v4
         with:
-          allure_results: |
-            allure-results
-          allure_report: allure-report
-          keep_reports: 5
+          node-version: "20"
 
-      #  Upload generated Allure HTML report
+      - name: Install Allure CLI
+        if: always()
+        run: npm i -g allure-commandline
+
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          if [ "$HAS_ALLURE_RESULTS" = "true" ]; then
+            rm -rf allure-report || true
+            allure generate allure-results -o allure-report --clean
+            echo "Allure report generated."
+          else
+            echo "No allure-results found. Skipping report generation."
+          fi
+
       - name: Upload Allure HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-html-report
-          path: allure-report
+          path: allure-report/**
+          if-no-files-found: warn
 
-      #  Upload raw Allure results (for local serve)
       - name: Upload Allure Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
-          path: |
-            allure-results/**
+          path: allure-results/**
+          if-no-files-found: warn
