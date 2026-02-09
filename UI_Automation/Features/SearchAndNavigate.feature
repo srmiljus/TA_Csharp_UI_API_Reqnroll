@@ -13,8 +13,8 @@ Feature: Search and navigate
 Scenario: Search for Steam game and navigate to the About page
 	Given I open Store page
 	When I search for "FIFA" game
-	Then I should see the first search result "EA SPORTS FC™ 25"
-	And I should see the second search result "FIFA 22"
+	Then I should see the first search result "FIFA 22"
+	And I should see the second search result "EA SPORTS FC™ 25"
 	When I search for "THE FINALS" game
 	And I click on the first search result in the search results
 	Then I should be redirected to the "THE_FINALS" page
