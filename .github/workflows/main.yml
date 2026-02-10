@@ -2,8 +2,7 @@ name: .NET Reqnroll Automation Tests
 
 on:
   push:
-    branches:
-      - master
+    branches: [ "master" ]
   workflow_dispatch:
     inputs:
       test_type:
@@ -11,88 +10,103 @@ on:
         required: true
         default: "All"
         type: choice
-        options:
-          - UI
-          - API
-          - All
+        options: [ "UI", "API", "All" ]
       browser:
         description: "Select browser"
         required: true
         default: "Chrome"
         type: choice
-        options:
-          - Chrome
-          - Edge
-          - Both
+        options: [ "Chrome", "Edge", "Both" ]
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     env:
-      # Default values for push runs (workflow_dispatch has inputs, push doesn't)
+      DOTNET_VERSION: "8.0.x"
+      # Defaults for push (because push has no inputs)
       TEST_TYPE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.test_type || 'All' }}
       BROWSER:   ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.browser   || 'Chrome' }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore dependencies
+      - name: dotnet --info
+        run: dotnet --info
+
+      - name: Restore
         run: dotnet restore
 
-      - name: Build solution
-        run: dotnet build --no-restore --configuration Release
+      - name: Build (Release)
+        run: dotnet build --configuration Release --no-restore
 
-      - name: Run tests
+      - name: Run tests (Release)
+        shell: pwsh
         run: |
-          echo "Running tests for: $TEST_TYPE"
-          echo "Browser: $BROWSER"
+          Write-Host "Running tests for: $env:TEST_TYPE"
+          Write-Host "Browser: $env:BROWSER"
 
-          if [ "$TEST_TYPE" = "UI" ]; then
-            dotnet test UI_Automation --configuration Release --logger "trx;LogFileName=ui-tests.trx"
-          elif [ "$TEST_TYPE" = "API" ]; then
-            dotnet test API_Automation --configuration Release --logger "trx;LogFileName=api-tests.trx"
-          else
-            dotnet test --configuration Release --logger "trx;LogFileName=all-tests.trx"
-          fi
+          # If your framework reads browser from ENV, this will work.
+          # If not, you can later map this to -- TestRunParameters or appsettings.
+          $env:BROWSER = "$env:BROWSER"
 
-      # Merge Allure results from anywhere in the repo into one folder
+          if ($env:TEST_TYPE -eq "UI") {
+            dotnet test .\UI_Automation\UI_Automation.csproj --configuration Release --no-build `
+              --logger "trx;LogFileName=ui-tests.trx"
+          }
+          elseif ($env:TEST_TYPE -eq "API") {
+            dotnet test .\API_Automation\API_Automation.csproj --configuration Release --no-build `
+              --logger "trx;LogFileName=api-tests.trx"
+          }
+          else {
+            dotnet test --configuration Release --no-build `
+              --logger "trx;LogFileName=all-tests.trx"
+          }
+
+      # Upload TRX files always (success or fail)
+      - name: Upload TRX test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-trx-results
+          path: |
+            **/*.trx
+          if-no-files-found: warn
+
+      # Collect allure-results from anywhere into one folder
       - name: Collect Allure results
         if: always()
-        shell: bash
+        shell: pwsh
         run: |
-          echo "Collecting allure-results..."
-          rm -rf allure-results || true
-          mkdir -p allure-results
+          Write-Host "Collecting allure-results..."
+          if (Test-Path "allure-results") { Remove-Item "allure-results" -Recurse -Force }
+          New-Item -ItemType Directory -Path "allure-results" | Out-Null
 
-          # Find any allure-results folders (Reqnroll/Allure can put them under bin/... or project root)
-          mapfile -t dirs < <(find . -type d -name "allure-results" -not -path "./allure-results" 2>/dev/null || true)
+          $dirs = Get-ChildItem -Path . -Recurse -Directory -Filter "allure-results" |
+                  Where-Object { $_.FullName -notmatch "\\allure-results$" }
 
-          echo "Found allure-results dirs:"
-          printf '%s\n' "${dirs[@]}"
+          Write-Host "Found allure-results dirs:"
+          $dirs | ForEach-Object { Write-Host $_.FullName }
 
-          for d in "${dirs[@]}"; do
-            echo "Copying from: $d"
-            cp -r "$d"/. allure-results/ 2>/dev/null || true
-          done
+          foreach ($d in $dirs) {
+            Copy-Item -Path (Join-Path $d.FullName "*") -Destination "allure-results" -Recurse -Force -ErrorAction SilentlyContinue
+          }
 
-          echo "Final allure-results content:"
-          ls -la allure-results || true
+          if ((Get-ChildItem "allure-results" -ErrorAction SilentlyContinue | Measure-Object).Count -gt 0) {
+            "HAS_ALLURE_RESULTS=true" | Out-File -FilePath $env:GITHUB_ENV -Append
+            Write-Host "HAS_ALLURE_RESULTS=true"
+          } else {
+            "HAS_ALLURE_RESULTS=false" | Out-File -FilePath $env:GITHUB_ENV -Append
+            Write-Host "HAS_ALLURE_RESULTS=false"
+          }
 
-          # Create a flag so next steps can decide whether to generate report
-          if [ -n "$(ls -A allure-results 2>/dev/null)" ]; then
-            echo "HAS_ALLURE_RESULTS=true" >> $GITHUB_ENV
-          else
-            echo "HAS_ALLURE_RESULTS=false" >> $GITHUB_ENV
-          fi
-
-      # Generate Allure HTML report WITHOUT Docker
+      # Generate Allure HTML report (no Docker) using Node + allure-commandline
       - name: Setup Node
         if: always()
         uses: actions/setup-node@v4
@@ -105,16 +119,18 @@ jobs:
 
       - name: Generate Allure HTML report
         if: always()
+        shell: pwsh
         run: |
-          if [ "$HAS_ALLURE_RESULTS" = "true" ]; then
-            rm -rf allure-report || true
+          if ($env:HAS_ALLURE_RESULTS -eq "true") {
+            if (Test-Path "allure-report") { Remove-Item "allure-report" -Recurse -Force }
             allure generate allure-results -o allure-report --clean
-            echo "Allure report generated."
-          else
-            echo "No allure-results found. Skipping report generation."
-          fi
+            Write-Host "Allure report generated."
+          }
+          else {
+            Write-Host "No allure-results found. Skipping report generation."
+          }
 
-      - name: Upload Allure HTML Report
+      - name: Upload Allure HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -122,7 +138,7 @@ jobs:
           path: allure-report/**
           if-no-files-found: warn
 
-      - name: Upload Allure Results
+      - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
