@@ -138,8 +138,8 @@ namespace UI_Automation.Features
                 await this.ScenarioStartAsync();
                 await testRunner.GivenAsync("I open Store page", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
                 await testRunner.WhenAsync("I search for \"FIFA\" game", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-                await testRunner.ThenAsync("I should see the first search result \"FIFA 22\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
-                await testRunner.AndAsync("I should see the second search result \"EA SPORTS FC™ 25\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                await testRunner.ThenAsync("I should see the first search result \"EA SPORTS FC™ 25\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+                await testRunner.AndAsync("I should see the second search result \"FIFA 22\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
                 await testRunner.WhenAsync("I search for \"THE FINALS\" game", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
                 await testRunner.AndAsync("I click on the first search result in the search results", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
                 await testRunner.ThenAsync("I should be redirected to the \"THE_FINALS\" page", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");

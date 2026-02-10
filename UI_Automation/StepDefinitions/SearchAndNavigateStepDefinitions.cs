@@ -19,7 +19,7 @@ namespace UI_Automation.StepDefinitions
         public SearchAndNavigateStepDefinitions(IWebDriver driver, StorePage storePage, AboutPage aboutPage, ScenarioContext scenarioContext)
         {
             _driver = driver;
-            _wait = new WebDriverWait(_driver, TimeSpan.Zero);
+            _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
             _config = Config.Load();
             _storePage = storePage;
             _aboutPage = aboutPage;

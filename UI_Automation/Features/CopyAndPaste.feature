@@ -9,7 +9,7 @@ Feature: Copy and paste
   I want to search for game and navigate to the official Steam About page
   So that I can play games on the Steam platform
 
-@ui 
+@ui
 Scenario: Copy
 	Given I open Store page
 	When I search for "FIFA" game
@@ -25,7 +25,7 @@ Scenario: Copy
 	And I should see the Install Steam button is clickable
 	And I should see that Playing Now gamers status are less than Online gamers status
 
-@ui 
+@ui
 Scenario: Paste
 	Given I open Store page
 	When I search for "THE FINALS" game
@@ -38,7 +38,7 @@ Scenario: Paste
 	And I should see the Install Steam button is clickable
 	And I should see that Playing Now gamers status are less than Online gamers status
 
-@ui 
+@ui
 Scenario: Cut
 	Given I open Store page
 	When I search for "THE FINALS" game
