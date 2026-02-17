@@ -24,7 +24,7 @@ jobs:
 
     env:
       DOTNET_VERSION: "8.0.x"
-      SOLUTION: ".\\Csharp_Automation_Task.slnx"
+      # FIX: do NOT use .slnx in CI
       TEST_TYPE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.test_type || 'All' }}
       BROWSER:   ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.browser   || 'Chrome' }}
 
@@ -40,11 +40,23 @@ jobs:
       - name: dotnet --info
         run: dotnet --info
 
-      - name: Restore (solution)
-        run: dotnet restore ${{ env.SOLUTION }}
+      # =========================
+      # FIX: Restore per project
+      # =========================
+      - name: Restore (projects)
+        shell: pwsh
+        run: |
+          dotnet restore .\UI_Automation\UI_Automation.csproj
+          dotnet restore .\API_Automation\API_Automation.csproj
 
-      - name: Build (Release)
-        run: dotnet build ${{ env.SOLUTION }} --configuration Release --no-restore
+      # =========================
+      # FIX: Build per project
+      # =========================
+      - name: Build UI (Release)
+        run: dotnet build .\UI_Automation\UI_Automation.csproj --configuration Release --no-restore
+
+      - name: Build API (Release)
+        run: dotnet build .\API_Automation\API_Automation.csproj --configuration Release --no-restore
 
       - name: Run tests (Release)
         shell: pwsh
