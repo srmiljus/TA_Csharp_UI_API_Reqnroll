@@ -19,22 +19,22 @@ namespace UI_Automation.StepDefinitions
         public SearchAndNavigateStepDefinitions(IWebDriver driver, StorePage storePage, AboutPage aboutPage, ScenarioContext scenarioContext)
         {
             _driver = driver;
-            _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            _wait = new WebDriverWait(_driver, TimeSpan.Zero);
             _config = Config.Load();
             _storePage = storePage;
             _aboutPage = aboutPage;
         }
 
         [Given("I open Store page")]
-       
+
         public void GivenIOpenStorePage()
         {
-            _driver.Navigate().GoToUrl(_config.BaseUrl); 
+            _driver.Navigate().GoToUrl(_config.BaseUrl);
             Logger.Log("Navigated to Steam Store page: " + _config.BaseUrl);
         }
 
         [When("I search for {string} game")]
-       
+
         public void WhenISearchForGame(string gameName)
         {
             _storePage.SearchForGame(gameName);
@@ -42,7 +42,7 @@ namespace UI_Automation.StepDefinitions
         }
 
         [Then("I should see the first search result {string}")]
-       
+
         public void ThenIShouldSeeTheFirstSearchResult(string searchedFirstGame)
         {
             Assert.That(_storePage.GetFirstSearchResultText(), Does.Contain(searchedFirstGame), "Expected the first search result to not be null or empty");
@@ -50,7 +50,7 @@ namespace UI_Automation.StepDefinitions
         }
 
         [Then("I should see the second search result {string}")]
-       
+
         public void ThenIShouldSeeTheSecondSearchResult(string searchedSecondGame)
         {
             Assert.That(_storePage.GetSecondSearchResultText(), Does.Contain(searchedSecondGame), "Expected the second search result to not be null or empty");
@@ -58,7 +58,7 @@ namespace UI_Automation.StepDefinitions
         }
 
         [When("I click on the first search result in the search results")]
-      
+
         public void WhenIClickOnTheFirstSearchResultInTheSearchResults()
         {
             _storePage.ClickFirstSearchResultWithJs();
@@ -84,7 +84,7 @@ namespace UI_Automation.StepDefinitions
         }
 
         [Then("I should see the game name {string} from the 1st search result")]
-       
+
         public void ThenIShouldSeeTheGameNameFromTheStSearchResult(string gameName)
         {
             Assert.That(_storePage.GetGameNameHeadingText(), Does.Contain(gameName), "Expected the game name heading text to not be null or empty");
@@ -92,7 +92,7 @@ namespace UI_Automation.StepDefinitions
         }
 
         [When("I click on Play Game button")]
-       
+
         public void WhenIClickOnPlayGameButton()
         {
             _storePage.ClickPlayGameButton();
@@ -100,7 +100,7 @@ namespace UI_Automation.StepDefinitions
         }
 
         [When("I click on No, I need Steam button")]
-        
+
         public void WhenIClickOnNoINeedSteamButton()
         {
             _storePage.ClickNoINeedSteamButton();
@@ -108,7 +108,7 @@ namespace UI_Automation.StepDefinitions
         }
 
         [Then("I should see the Install Steam button is clickable")]
-       
+
         public void ThenIShouldSeeTheInstallSteamButtonIsClickable()
         {
             Assert.That(_aboutPage.IsInstallSteamButtonClickable(), Is.True, "Expected the Install Steam button to be clickable");
@@ -116,7 +116,7 @@ namespace UI_Automation.StepDefinitions
         }
 
         [Then("I should see that Playing Now gamers status are less than Online gamers status")]
-      
+
         public void ThenIShouldSeeThatPlayingNowGamersStatusAreLessThanOnlineGamersStatus()
         {
             Assert.That(_aboutPage.CompareIfPlayingNowStatusIsLessThanOnlineStatus(), Is.True, "Expected to find at least one Online status element");

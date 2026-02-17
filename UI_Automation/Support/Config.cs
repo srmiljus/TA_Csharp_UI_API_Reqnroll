@@ -3,33 +3,35 @@ using System.Text.Json.Serialization;
 
 namespace UI_Automation.Support
 {
-   
     public class Config
     {
         public string BaseUrl { get; set; }
         public string Browser { get; set; }
-        public bool Headless { get; set; } = true; 
+        public bool Headless { get; set; } = true;
         public bool Incognito { get; set; } = true;
+        public bool UseRemote { get; set; } = false;
+        public string RemoteUrl { get; set; } = "http://localhost:4444/wd/hub";
 
-     
         private static Config _instance;
         private static readonly object _lock = new();
 
-    
         [JsonConstructor]
-        public Config(string baseUrl, string browser, bool headless = true, bool incognito = true)
+        public Config(
+            string baseUrl,
+            string browser,
+            bool headless = true,
+            bool incognito = true,
+            bool useRemote = false,
+            string remoteUrl = "http://localhost:4444/wd/hub")
         {
             BaseUrl = baseUrl;
             Browser = browser;
             Headless = headless;
             Incognito = incognito;
+            UseRemote = useRemote;
+            RemoteUrl = remoteUrl;
         }
 
-        /// <summary>
-        /// Loads configuration from appsettings.json and returns a singleton instance.
-        /// </summary>
-        /// <param name="fileName">The name of the settings file (default: "appsettings.json").</param>
-        /// <returns>Config instance with properties set from the file.</returns>
         public static Config Load(string fileName = "appsettings.json")
         {
             if (_instance != null)
@@ -47,7 +49,12 @@ namespace UI_Automation.Support
                     throw new FileNotFoundException($"Configuration file '{fileName}' not found at '{filePath}'.");
 
                 var json = File.ReadAllText(filePath);
-                _instance = JsonSerializer.Deserialize<Config>(json);
+
+                _instance = JsonSerializer.Deserialize<Config>(json,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
 
                 if (_instance == null)
                     throw new InvalidOperationException("Failed to deserialize configuration.");

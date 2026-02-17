@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
 namespace UI_Automation.Pages
 {
@@ -6,77 +7,116 @@ namespace UI_Automation.Pages
     {
         private readonly IWebDriver _driver;
         private readonly IJavaScriptExecutor _jsExecutor;
+        private readonly WebDriverWait _wait;
 
-        #region Locators
+        #region Locators (By)
 
-        private IWebElement SearchBox => _driver.FindElement(By.XPath("//input[@class='_2tlUAG6WNyYFlk9caIiLj5']"));
-        private IList<IWebElement> SearchResults => _driver.FindElements(By.CssSelector(".search_result_row"));
-        private IWebElement GameNameHeading => _driver.FindElement(By.Id("appHubAppName"));
-        private IWebElement PlayGameButton => _driver.FindElement(By.Id("freeGameBtn"));
-        private IWebElement NoINeedSteamButton => _driver.FindElement(By.XPath("//h3[contains(text(),'No, I need Steam')]"));
+        private readonly By SearchBoxInput = By.XPath("//input[@class='_2tlUAG6WNyYFlk9caIiLj5']");
+        private readonly By SearchResultsRows = By.CssSelector(".search_result_row");
+        private readonly By GameNameHeading = By.Id("appHubAppName");
+        private readonly By PlayGameButton = By.Id("freeGameBtn");
+        private readonly By NoINeedSteamButton = By.XPath("//h3[contains(text(),'No, I need Steam')]");
+
         #endregion
 
         public StorePage(IWebDriver driver)
         {
             _driver = driver;
             _jsExecutor = (IJavaScriptExecutor)driver;
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
         }
 
+        #region Helpers
+
+        private IWebElement WaitVisible(By by)
+            => _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(by));
+
+        private IWebElement WaitClickable(By by)
+            => _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(by));
+
+        private IReadOnlyCollection<IWebElement> WaitForSearchResults(int minCount = 1)
+        {
+            _wait.Until(d =>
+            {
+                var els = d.FindElements(SearchResultsRows);
+                return els != null && els.Count >= minCount;
+            });
+
+            return _driver.FindElements(SearchResultsRows);
+        }
+
+        private void ScrollTo(By by, int yShift = 350)
+        {
+            var el = WaitVisible(by);
+            var linkYPositionShift = el.Location.Y - yShift;
+            _jsExecutor.ExecuteScript("window.scrollBy(0, arguments[0]);", linkYPositionShift);
+        }
+
+        #endregion
+
         #region Actions
-        
 
         public void SearchForGame(string gameName)
         {
-            SearchBox.Clear();
-            SearchBox.SendKeys(gameName);
-            SearchBox.SendKeys(Keys.Enter);
+            var search = WaitVisible(SearchBoxInput);
+            search.Clear();
+            search.SendKeys(gameName);
+            search.SendKeys(Keys.Enter);
+
+            // wait that results load (prevents "Sequence contains no elements")
+            WaitForSearchResults(1);
         }
 
         public string GetFirstSearchResultText()
         {
-            return SearchResults.First().Text;
+            var results = WaitForSearchResults(1);
+            return results.First().Text;
         }
 
         public string GetSecondSearchResultText()
         {
-            return SearchResults.Count > 1 ? SearchResults[1].Text : string.Empty;
+            var results = WaitForSearchResults(2);
+            return results.Skip(1).First().Text;
+        }
+
+        public void ClickFirstSearchResult()
+        {
+            var results = WaitForSearchResults(1);
+            results.First().Click();
         }
 
         public void ClickFirstSearchResultWithJs()
         {
-            var firstResult = SearchResults.FirstOrDefault();
-            if (firstResult != null)
-            {
-                _jsExecutor.ExecuteScript("arguments[0].click();", firstResult);
-            }
+            var results = WaitForSearchResults(1);
+            var first = results.First();
+            _jsExecutor.ExecuteScript("arguments[0].click();", first);
         }
 
-        public string GetPageUrl()
+        public void WaitForGameDetailsPage()
         {
-            return _driver.Url;
+            // Steam page sometimes loads slower in Grid/headless
+            WaitVisible(GameNameHeading);
         }
+
+        public string GetPageUrl() => _driver.Url;
 
         public string GetGameNameHeadingText()
         {
-            return GameNameHeading.Text;
+            WaitForGameDetailsPage();
+            return WaitVisible(GameNameHeading).Text;
         }
 
         public void ClickPlayGameButton()
         {
-            ScrollToElement(PlayGameButton);
-            PlayGameButton.Click();
+            ScrollTo(PlayGameButton);
+            WaitClickable(PlayGameButton).Click();
         }
 
         public void ClickNoINeedSteamButton()
         {
-            NoINeedSteamButton.Click();
+            WaitClickable(NoINeedSteamButton).Click();
         }
 
-        private void ScrollToElement(IWebElement element)
-        {
-            var linkYPositionShift = element.Location.Y - 350;
-            _jsExecutor.ExecuteScript("window.scrollBy(0," + linkYPositionShift + ");");
-        }
+        #endregion
     }
-    #endregion
 }

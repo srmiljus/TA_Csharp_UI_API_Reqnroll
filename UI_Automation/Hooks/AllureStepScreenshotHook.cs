@@ -1,7 +1,6 @@
-﻿using System.Text;
-using Allure.Net.Commons;
+﻿using Allure.Net.Commons;
 using OpenQA.Selenium;
-using Reqnroll;
+using System.Text;
 
 namespace UI_Automation.Hooks
 {
@@ -18,7 +17,7 @@ namespace UI_Automation.Hooks
         [AfterStep(Order = 9999)]
         public void AfterStep()
         {
-   
+
             if (_scenarioContext.TestError == null)
                 return;
 

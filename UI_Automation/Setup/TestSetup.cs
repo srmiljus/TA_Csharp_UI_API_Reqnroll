@@ -4,10 +4,8 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
-using Reqnroll;
+using OpenQA.Selenium.Remote;
 using Reqnroll.BoDi;
-using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using UI_Automation.Enums;
@@ -15,8 +13,8 @@ using UI_Automation.Support;
 
 //[assembly: Parallelizable(ParallelScope.Self | ParallelScope.Children)]
 //[assembly: Parallelizable(ParallelScope.Fixtures)]
-//[assembly: Parallelizable(ParallelScope.All)]
-//[assembly: LevelOfParallelism(2)]
+[assembly: Parallelizable(ParallelScope.All)]
+[assembly: LevelOfParallelism(2)]
 
 namespace UI_Automation.Setup
 {
@@ -24,14 +22,14 @@ namespace UI_Automation.Setup
     public class TestSetup : IDisposable
     {
         private readonly IObjectContainer _container;
-        private readonly ScenarioContext _scenarioContext;  
+        private readonly ScenarioContext _scenarioContext;
         private IWebDriver _driver;
         private static Config _config;
 
         public TestSetup(IObjectContainer container, ScenarioContext scenarioContext)
         {
             _container = container;
-            _scenarioContext = scenarioContext;              
+            _scenarioContext = scenarioContext;
         }
 
         [BeforeTestRun]
@@ -44,48 +42,88 @@ namespace UI_Automation.Setup
                              ?? Path.Combine(AppContext.BaseDirectory, "allure-results");
             Directory.CreateDirectory(resultsDir);
 
-            // environment.properties
+
             var osName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" :
                          RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS" : "Linux";
 
             File.WriteAllLines(Path.Combine(resultsDir, "environment.properties"), new[]
             {
-        "env=QA",
-        $"baseUrl={_config.BaseUrl}",
-        $"browser={_config.Browser}",
-        $"os={osName}",
-        "framework=Reqnroll + NUnit + Selenium"
-    });
+                "env=QA",
+                $"baseUrl={_config.BaseUrl}",
+                $"browser={_config.Browser}",
+                $"os={osName}",
+                "framework=Reqnroll + NUnit + Selenium"
+            });
 
-            
             File.WriteAllText(Path.Combine(resultsDir, "executor.json"),
                 """
-        {
-          "name": "Local Run",
-          "type": "other",
-          "buildName": "UI_Automation"
-        }
-        """, Encoding.UTF8);
+                {
+                  "name": "Local Run",
+                  "type": "other",
+                  "buildName": "UI_Automation"
+                }
+                """, Encoding.UTF8);
         }
 
         [BeforeScenario]
         public void InitializeWebDriver()
         {
-            _driver = CreateWebDriver(_config.Browser, _config.Headless, _config.Incognito);
+            // Remote toggle (Docker/Grid)
+            var useRemote = IsRemoteEnabled();
+
+            _driver = CreateWebDriver(
+                _config.Browser,
+                _config.Headless,
+                _config.Incognito,
+                useRemote
+            );
+
             try { _driver.Manage().Window.Maximize(); } catch { }
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
-            
+
             _container.RegisterInstanceAs<IWebDriver>(_driver);
-
-            
             _scenarioContext["driver"] = _driver;
 
-            Logger.Log($"Initialized WebDriver for browser: {_config.Browser}, Headless: {_config.Headless}, Incognito: {_config.Incognito}");
+            Logger.Log($"Initialized WebDriver for browser: {_config.Browser}, Headless: {_config.Headless}, Incognito: {_config.Incognito}, Remote: {useRemote}");
         }
 
-        private static IWebDriver CreateWebDriver(string browserName, bool headless, bool incognito)
+        private static bool IsRemoteEnabled()
         {
+            var raw = Environment.GetEnvironmentVariable("USE_REMOTE") ?? "false";
+            return raw.Equals("true", StringComparison.OrdinalIgnoreCase) ||
+                   raw.Equals("1", StringComparison.OrdinalIgnoreCase) ||
+                   raw.Equals("yes", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string GetRemoteUrl()
+        {
+            // docker-compose: http://selenium:4444/wd/hub
+            // local host:     http://localhost:4444/wd/hub
+            return Environment.GetEnvironmentVariable("SELENIUM_REMOTE_URL")
+           ?? "http://selenium:4444/wd/hub";
+
+        }
+
+        private static IWebDriver CreateWebDriver(string browserName, bool headless, bool incognito, bool useRemote)
+        {
+            //If remote is enabled → use Selenium Grid (docker chrome)
+            if (useRemote)
+            {
+                var remoteUrl = GetRemoteUrl();
+
+                // Remote side is typically Chrome in selenium/standalone-chrome
+                // Keep options aligned with your existing flags.
+                var options = new ChromeOptions();
+                if (headless) options.AddArgument("--headless=new");
+                if (incognito) options.AddArgument("--incognito");
+
+                // Optional stability options (safe for Docker)
+                options.AddArgument("--no-sandbox");
+                options.AddArgument("--disable-dev-shm-usage");
+
+                return new RemoteWebDriver(new Uri(remoteUrl), options);
+            }
+
             if (Enum.TryParse(browserName, true, out BrowserType browser))
             {
                 switch (browser)
@@ -118,7 +156,8 @@ namespace UI_Automation.Setup
                         return new OpenQA.Selenium.Safari.SafariDriver();
                 }
             }
-            throw new ArgumentOutOfRangeException(nameof(browser), $"Browser '{browser}' is not supported.");
+
+            throw new ArgumentOutOfRangeException(nameof(browserName), $"Browser '{browserName}' is not supported.");
         }
 
         public void NavigateToBaseUrl()
@@ -140,7 +179,5 @@ namespace UI_Automation.Setup
                 _driver = null;
             }
         }
-
     }
 }
-
