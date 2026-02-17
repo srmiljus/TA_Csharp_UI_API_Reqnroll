@@ -24,7 +24,7 @@ jobs:
 
     env:
       DOTNET_VERSION: "8.0.x"
-      # Defaults for push (because push has no inputs)
+      SOLUTION: ".\\Csharp_Automation_Task.slnx"
       TEST_TYPE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.test_type || 'All' }}
       BROWSER:   ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.browser   || 'Chrome' }}
 
@@ -40,11 +40,11 @@ jobs:
       - name: dotnet --info
         run: dotnet --info
 
-      - name: Restore
-        run: dotnet restore
+      - name: Restore (solution)
+        run: dotnet restore ${{ env.SOLUTION }}
 
       - name: Build (Release)
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ${{ env.SOLUTION }} --configuration Release --no-restore
 
       - name: Run tests (Release)
         shell: pwsh
@@ -52,8 +52,7 @@ jobs:
           Write-Host "Running tests for: $env:TEST_TYPE"
           Write-Host "Browser: $env:BROWSER"
 
-          # If your framework reads browser from ENV, this will work.
-          # If not, you can later map this to -- TestRunParameters or appsettings.
+          # Pass browser via ENV (if your framework reads it)
           $env:BROWSER = "$env:BROWSER"
 
           if ($env:TEST_TYPE -eq "UI") {
@@ -65,11 +64,13 @@ jobs:
               --logger "trx;LogFileName=api-tests.trx"
           }
           else {
-            dotnet test --configuration Release --no-build `
-              --logger "trx;LogFileName=all-tests.trx"
+            dotnet test .\UI_Automation\UI_Automation.csproj --configuration Release --no-build `
+              --logger "trx;LogFileName=ui-tests.trx"
+
+            dotnet test .\API_Automation\API_Automation.csproj --configuration Release --no-build `
+              --logger "trx;LogFileName=api-tests.trx"
           }
 
-      # Upload TRX files always (success or fail)
       - name: Upload TRX test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -79,7 +80,6 @@ jobs:
             **/*.trx
           if-no-files-found: warn
 
-      # Collect allure-results from anywhere into one folder
       - name: Collect Allure results
         if: always()
         shell: pwsh
@@ -106,7 +106,6 @@ jobs:
             Write-Host "HAS_ALLURE_RESULTS=false"
           }
 
-      # Generate Allure HTML report (no Docker) using Node + allure-commandline
       - name: Setup Node
         if: always()
         uses: actions/setup-node@v4
