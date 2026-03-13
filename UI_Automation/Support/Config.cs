@@ -59,6 +59,15 @@ namespace UI_Automation.Support
                 if (_instance == null)
                     throw new InvalidOperationException("Failed to deserialize configuration.");
 
+                // Allow environment variable overrides for CI
+                var envBrowser = Environment.GetEnvironmentVariable("BROWSER");
+                if (!string.IsNullOrWhiteSpace(envBrowser))
+                    _instance.Browser = envBrowser;
+
+                var envHeadless = Environment.GetEnvironmentVariable("HEADLESS");
+                if (!string.IsNullOrWhiteSpace(envHeadless))
+                    _instance.Headless = envHeadless.Equals("true", StringComparison.OrdinalIgnoreCase);
+
                 return _instance;
             }
         }

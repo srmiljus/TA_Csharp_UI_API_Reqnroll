@@ -13,8 +13,8 @@ using UI_Automation.Support;
 
 //[assembly: Parallelizable(ParallelScope.Self | ParallelScope.Children)]
 //[assembly: Parallelizable(ParallelScope.Fixtures)]
-[assembly: Parallelizable(ParallelScope.All)]
-[assembly: LevelOfParallelism(2)]
+//[assembly: Parallelizable(ParallelScope.All)]
+//[assembly: LevelOfParallelism(2)]
 
 namespace UI_Automation.Setup
 {
@@ -120,6 +120,7 @@ namespace UI_Automation.Setup
                 // Optional stability options (safe for Docker)
                 options.AddArgument("--no-sandbox");
                 options.AddArgument("--disable-dev-shm-usage");
+                options.AddArgument("--window-size=1920,1080");
 
                 return new RemoteWebDriver(new Uri(remoteUrl), options);
             }
@@ -132,6 +133,9 @@ namespace UI_Automation.Setup
                         var chromeOptions = new ChromeOptions();
                         if (headless) chromeOptions.AddArgument("--headless=new");
                         if (incognito) chromeOptions.AddArgument("--incognito");
+                        chromeOptions.AddArgument("--no-sandbox");
+                        chromeOptions.AddArgument("--disable-dev-shm-usage");
+                        chromeOptions.AddArgument("--window-size=1920,1080");
                         return new ChromeDriver(chromeOptions);
 
                     case BrowserType.Firefox:
