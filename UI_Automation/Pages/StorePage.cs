@@ -114,7 +114,12 @@ namespace UI_Automation.Pages
 
         public void ClickNoINeedSteamButton()
         {
-            WaitClickable(NoINeedSteamButton).Click();
+            // Dismiss any browser-level protocol handler dialog
+            try { _driver.SwitchTo().Alert().Dismiss(); } catch { }
+
+            var button = WaitClickable(NoINeedSteamButton);
+            _jsExecutor.ExecuteScript("arguments[0].scrollIntoView({block:'center'});", button);
+            _jsExecutor.ExecuteScript("arguments[0].click();", button);
         }
 
         #endregion
