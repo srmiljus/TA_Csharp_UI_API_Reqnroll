@@ -3,6 +3,8 @@
 @allure.feature:CopyPaste
 @allure.owner:Srdjan_Miljus
 @allure.severity:critical
+@allure.tag:regression
+@allure.link:https://store.steampowered.com
 Feature: Copy and paste
 
   As a user
@@ -10,6 +12,7 @@ Feature: Copy and paste
   So that I can play games on the Steam platform
 
 @ui
+@allure.story:Copy_to_clipboard
 Scenario: Copy
 	Given I open Store page
 	When I search for "FIFA" game
@@ -26,6 +29,7 @@ Scenario: Copy
 	And I should see that Playing Now gamers status are less than Online gamers status
 
 @ui
+@allure.story:Paste_from_clipboard
 Scenario: Paste
 	Given I open Store page
 	When I search for "THE FINALS" game
@@ -39,6 +43,7 @@ Scenario: Paste
 	And I should see that Playing Now gamers status are less than Online gamers status
 
 @ui
+@allure.story:Cut_to_clipboard
 Scenario: Cut
 	Given I open Store page
 	When I search for "THE FINALS" game

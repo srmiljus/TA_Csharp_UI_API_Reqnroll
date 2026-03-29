@@ -3,13 +3,17 @@
 @allure.feature:Search
 @allure.owner:Srdjan_Miljus
 @allure.severity:critical
+@allure.tag:regression
+@allure.link:https://store.steampowered.com
 Feature: Search and navigate
 
   As a user
   I want to search for game and navigate to the official Steam About page
   So that I can play games on the Steam platform
 
-@ui 
+@ui
+@allure.story:Search_by_game_title
+@allure.tag:smoke
 Scenario: Search for Steam game and navigate to the About page
 	Given I open Store page
 	When I search for "FIFA" game
@@ -25,7 +29,8 @@ Scenario: Search for Steam game and navigate to the About page
 	And I should see the Install Steam button is clickable
 	And I should see that Playing Now gamers status are less than Online gamers status
 
-@ui 
+@ui
+@allure.story:Navigate_to_About_page
 Scenario: Navigate to the About page
 	Given I open Store page
 	When I search for "THE FINALS" game
@@ -38,7 +43,8 @@ Scenario: Navigate to the About page
 	And I should see the Install Steam button is clickable
 	And I should see that Playing Now gamers status are less than Online gamers status
 
-@ui 
+@ui
+@allure.story:About_page_verification
 Scenario: About page
 	Given I open Store page
 	When I search for "THE FINALS" game

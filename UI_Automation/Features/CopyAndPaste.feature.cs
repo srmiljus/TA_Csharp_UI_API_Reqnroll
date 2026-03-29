@@ -25,6 +25,8 @@ namespace UI_Automation.Features
     [global::NUnit.Framework.CategoryAttribute("allure.feature:CopyPaste")]
     [global::NUnit.Framework.CategoryAttribute("allure.owner:Srdjan_Miljus")]
     [global::NUnit.Framework.CategoryAttribute("allure.severity:critical")]
+    [global::NUnit.Framework.CategoryAttribute("allure.tag:regression")]
+    [global::NUnit.Framework.CategoryAttribute("allure.link:https://store.steampowered.com")]
     public partial class CopyAndPasteFeature
     {
         
@@ -35,7 +37,9 @@ namespace UI_Automation.Features
                 "allure.epic:SteamWebInterface",
                 "allure.feature:CopyPaste",
                 "allure.owner:Srdjan_Miljus",
-                "allure.severity:critical"};
+                "allure.severity:critical",
+                "allure.tag:regression",
+                "allure.link:https://store.steampowered.com"};
         
         private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Copy and paste", "  As a user\r\n  I want to search for game and navigate to the official Steam About" +
                 " page\r\n  So that I can play games on the Steam platform", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
@@ -119,10 +123,12 @@ namespace UI_Automation.Features
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("Copy")]
         [global::NUnit.Framework.CategoryAttribute("ui")]
+        [global::NUnit.Framework.CategoryAttribute("allure.story:Copy_to_clipboard")]
         public async global::System.Threading.Tasks.Task Copy()
         {
             string[] tagsOfScenario = new string[] {
-                    "ui"};
+                    "ui",
+                    "allure.story:Copy_to_clipboard"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Copy", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -156,10 +162,12 @@ namespace UI_Automation.Features
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("Paste")]
         [global::NUnit.Framework.CategoryAttribute("ui")]
+        [global::NUnit.Framework.CategoryAttribute("allure.story:Paste_from_clipboard")]
         public async global::System.Threading.Tasks.Task Paste()
         {
             string[] tagsOfScenario = new string[] {
-                    "ui"};
+                    "ui",
+                    "allure.story:Paste_from_clipboard"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "1";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Paste", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -190,10 +198,12 @@ namespace UI_Automation.Features
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("Cut")]
         [global::NUnit.Framework.CategoryAttribute("ui")]
+        [global::NUnit.Framework.CategoryAttribute("allure.story:Cut_to_clipboard")]
         public async global::System.Threading.Tasks.Task Cut()
         {
             string[] tagsOfScenario = new string[] {
-                    "ui"};
+                    "ui",
+                    "allure.story:Cut_to_clipboard"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "2";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Cut", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
