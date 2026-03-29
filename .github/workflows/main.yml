@@ -118,6 +118,17 @@ jobs:
         if: always()
         run: npm i -g allure-commandline
 
+      - name: Download previous Allure history
+        if: always()
+        uses: dawidd6/action-download-artifact@v3
+        continue-on-error: true
+        with:
+          workflow: main.yml
+          name: allure-history
+          path: allure-results/history
+          if_no_artifact_found: warn
+
+
       - name: Generate Allure HTML report
         if: always()
         shell: pwsh
@@ -145,4 +156,12 @@ jobs:
         with:
           name: allure-results
           path: allure-results/**
+          if-no-files-found: warn
+
+      - name: Save Allure history for next run
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-history
+          path: allure-report/history
           if-no-files-found: warn

@@ -25,6 +25,8 @@ namespace UI_Automation.Features
     [global::NUnit.Framework.CategoryAttribute("allure.feature:Search")]
     [global::NUnit.Framework.CategoryAttribute("allure.owner:Srdjan_Miljus")]
     [global::NUnit.Framework.CategoryAttribute("allure.severity:critical")]
+    [global::NUnit.Framework.CategoryAttribute("allure.tag:regression")]
+    [global::NUnit.Framework.CategoryAttribute("allure.link:https://store.steampowered.com")]
     public partial class SearchAndNavigateFeature
     {
         
@@ -35,7 +37,9 @@ namespace UI_Automation.Features
                 "allure.epic:SteamWebInterface",
                 "allure.feature:Search",
                 "allure.owner:Srdjan_Miljus",
-                "allure.severity:critical"};
+                "allure.severity:critical",
+                "allure.tag:regression",
+                "allure.link:https://store.steampowered.com"};
         
         private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Search and navigate", "  As a user\r\n  I want to search for game and navigate to the official Steam About" +
                 " page\r\n  So that I can play games on the Steam platform", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
@@ -119,10 +123,14 @@ namespace UI_Automation.Features
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("Search for Steam game and navigate to the About page")]
         [global::NUnit.Framework.CategoryAttribute("ui")]
+        [global::NUnit.Framework.CategoryAttribute("allure.story:Search_by_game_title")]
+        [global::NUnit.Framework.CategoryAttribute("allure.tag:smoke")]
         public async global::System.Threading.Tasks.Task SearchForSteamGameAndNavigateToTheAboutPage()
         {
             string[] tagsOfScenario = new string[] {
-                    "ui"};
+                    "ui",
+                    "allure.story:Search_by_game_title",
+                    "allure.tag:smoke"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Search for Steam game and navigate to the About page", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -156,10 +164,12 @@ namespace UI_Automation.Features
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("Navigate to the About page")]
         [global::NUnit.Framework.CategoryAttribute("ui")]
+        [global::NUnit.Framework.CategoryAttribute("allure.story:Navigate_to_About_page")]
         public async global::System.Threading.Tasks.Task NavigateToTheAboutPage()
         {
             string[] tagsOfScenario = new string[] {
-                    "ui"};
+                    "ui",
+                    "allure.story:Navigate_to_About_page"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "1";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Navigate to the About page", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
@@ -190,10 +200,12 @@ namespace UI_Automation.Features
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("About page")]
         [global::NUnit.Framework.CategoryAttribute("ui")]
+        [global::NUnit.Framework.CategoryAttribute("allure.story:About_page_verification")]
         public async global::System.Threading.Tasks.Task AboutPage()
         {
             string[] tagsOfScenario = new string[] {
-                    "ui"};
+                    "ui",
+                    "allure.story:About_page_verification"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "2";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("About page", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);

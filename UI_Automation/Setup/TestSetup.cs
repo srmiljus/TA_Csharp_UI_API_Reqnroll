@@ -63,6 +63,24 @@ namespace UI_Automation.Setup
                   "buildName": "UI_Automation"
                 }
                 """, Encoding.UTF8);
+
+            File.WriteAllText(Path.Combine(resultsDir, "categories.json"),
+                """
+                [
+                  {
+                    "name": "Product defects",
+                    "matchedStatuses": ["failed"]
+                  },
+                  {
+                    "name": "Test defects",
+                    "matchedStatuses": ["broken"]
+                  },
+                  {
+                    "name": "Ignored tests",
+                    "matchedStatuses": ["skipped"]
+                  }
+                ]
+                """, Encoding.UTF8);
         }
 
         [BeforeScenario]
@@ -117,13 +135,10 @@ namespace UI_Automation.Setup
                 if (headless) options.AddArgument("--headless=new");
                 if (incognito) options.AddArgument("--incognito");
 
-                // Optional stability options (safe for Docker/CI)
+                // Optional stability options (safe for Docker)
                 options.AddArgument("--no-sandbox");
                 options.AddArgument("--disable-dev-shm-usage");
                 options.AddArgument("--window-size=1920,1080");
-                options.AddArgument("--disable-popup-blocking");
-                options.AddExcludedArgument("enable-automation");
-                options.AddUserProfilePreference("protocol_handler.excluded_schemes", new Dictionary<string, object> { { "steam", true } });
 
                 return new RemoteWebDriver(new Uri(remoteUrl), options);
             }
@@ -139,9 +154,6 @@ namespace UI_Automation.Setup
                         chromeOptions.AddArgument("--no-sandbox");
                         chromeOptions.AddArgument("--disable-dev-shm-usage");
                         chromeOptions.AddArgument("--window-size=1920,1080");
-                        chromeOptions.AddArgument("--disable-popup-blocking");
-                        chromeOptions.AddExcludedArgument("enable-automation");
-                        chromeOptions.AddUserProfilePreference("protocol_handler.excluded_schemes", new Dictionary<string, object> { { "steam", true } });
                         return new ChromeDriver(chromeOptions);
 
                     case BrowserType.Firefox:
