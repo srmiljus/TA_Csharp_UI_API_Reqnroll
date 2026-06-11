@@ -87,7 +87,7 @@ allure open allure-report
 ## 🗁 Project Structure
 
 ```text
-Csharp_Automation_Task/
+CsharpUiApiAutomation
 ├── UI_Automation/
 │   ├── Features/
 │   ├── Pages/
@@ -105,7 +105,7 @@ Csharp_Automation_Task/
 │   └── workflows/
 │       └── automation-tests.yml
 │
-├── Csharp_Automation_Task.sln
+├── CCsharpUiApiAutomation.sln
 ├── README.md
 └── .gitignore
 ```
@@ -136,4 +136,4 @@ Example snippet from workflow:
 
 ---
 
-👤 **Author:** *Srdjan Miljus — QA Automation Engineer
+👤 **Author:** *Srdjan Miljus — QA Automation Engineer*
