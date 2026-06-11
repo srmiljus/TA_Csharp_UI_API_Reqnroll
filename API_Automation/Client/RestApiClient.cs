@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using RestSharp;
-using API_Automation.Constants;
+﻿using API_Automation.Constants;
 using API_Automation.Helpers;
 using API_Automation.Models.Response;
 using API_Automation.Utils;
+using Newtonsoft.Json;
+using RestSharp;
 
 namespace API_Automation.Client
 {
@@ -13,14 +13,14 @@ namespace API_Automation.Client
 
         public RestApiClient(string baseUrl)
         {
-        
             var timeoutSeconds = ConfigReader.GetTimeout();
 
             var options = new RestClientOptions(baseUrl)
             {
                 ThrowOnAnyError = false,
-                MaxTimeout = timeoutSeconds * 1000  // Convert seconds to milliseconds
+                Timeout = TimeSpan.FromSeconds(timeoutSeconds)
             };
+
             _client = new RestClient(options);
         }
 

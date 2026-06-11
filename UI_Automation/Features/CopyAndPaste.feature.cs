@@ -18,16 +18,16 @@ namespace UI_Automation.Features
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "3.0.0.0")]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::NUnit.Framework.TestFixtureAttribute()]
-    [global::NUnit.Framework.DescriptionAttribute("Search and navigate")]
+    [global::NUnit.Framework.DescriptionAttribute("Copy and paste")]
     [global::NUnit.Framework.FixtureLifeCycleAttribute(global::NUnit.Framework.LifeCycle.InstancePerTestCase)]
     [global::NUnit.Framework.CategoryAttribute("regression")]
     [global::NUnit.Framework.CategoryAttribute("allure.epic:SteamWebInterface")]
-    [global::NUnit.Framework.CategoryAttribute("allure.feature:Search")]
+    [global::NUnit.Framework.CategoryAttribute("allure.feature:CopyPaste")]
     [global::NUnit.Framework.CategoryAttribute("allure.owner:Srdjan_Miljus")]
     [global::NUnit.Framework.CategoryAttribute("allure.severity:critical")]
     [global::NUnit.Framework.CategoryAttribute("allure.tag:regression")]
     [global::NUnit.Framework.CategoryAttribute("allure.link:https://store.steampowered.com")]
-    public partial class SearchAndNavigateFeature
+    public partial class CopyAndPasteFeature
     {
         
         private global::Reqnroll.ITestRunner testRunner;
@@ -35,13 +35,13 @@ namespace UI_Automation.Features
         private static string[] featureTags = new string[] {
                 "regression",
                 "allure.epic:SteamWebInterface",
-                "allure.feature:Search",
+                "allure.feature:CopyPaste",
                 "allure.owner:Srdjan_Miljus",
                 "allure.severity:critical",
                 "allure.tag:regression",
                 "allure.link:https://store.steampowered.com"};
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Search and navigate", "  As a user\r\n  I want to search for game and navigate to the official Steam About" +
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Copy and paste", "  As a user\r\n  I want to search for game and navigate to the official Steam About" +
                 " page\r\n  So that I can play games on the Steam platform", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
         [global::NUnit.Framework.OneTimeSetUpAttribute()]
@@ -117,23 +117,21 @@ namespace UI_Automation.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/SearchAndNavigate.feature.ndjson", 5);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/CopyAndPaste.feature.ndjson", 5);
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Search for Steam game and navigate to the About page")]
+        [global::NUnit.Framework.DescriptionAttribute("Copy")]
         [global::NUnit.Framework.CategoryAttribute("ui")]
-        [global::NUnit.Framework.CategoryAttribute("allure.story:Search_by_game_title")]
-        [global::NUnit.Framework.CategoryAttribute("allure.tag:smoke")]
-        public async global::System.Threading.Tasks.Task SearchForSteamGameAndNavigateToTheAboutPage()
+        [global::NUnit.Framework.CategoryAttribute("allure.story:Copy_to_clipboard")]
+        public async global::System.Threading.Tasks.Task Copy()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
-                    "allure.story:Search_by_game_title",
-                    "allure.tag:smoke"};
+                    "allure.story:Copy_to_clipboard"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Search for Steam game and navigate to the About page", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Copy", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
             this.ScenarioInitialize(scenarioInfo, ruleInfo);
@@ -162,17 +160,17 @@ namespace UI_Automation.Features
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Navigate to the About page")]
+        [global::NUnit.Framework.DescriptionAttribute("Paste")]
         [global::NUnit.Framework.CategoryAttribute("ui")]
-        [global::NUnit.Framework.CategoryAttribute("allure.story:Navigate_to_About_page")]
-        public async global::System.Threading.Tasks.Task NavigateToTheAboutPage()
+        [global::NUnit.Framework.CategoryAttribute("allure.story:Paste_from_clipboard")]
+        public async global::System.Threading.Tasks.Task Paste()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
-                    "allure.story:Navigate_to_About_page"};
+                    "allure.story:Paste_from_clipboard"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "1";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Navigate to the About page", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Paste", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
             this.ScenarioInitialize(scenarioInfo, ruleInfo);
@@ -198,17 +196,17 @@ namespace UI_Automation.Features
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("About page")]
+        [global::NUnit.Framework.DescriptionAttribute("Cut")]
         [global::NUnit.Framework.CategoryAttribute("ui")]
-        [global::NUnit.Framework.CategoryAttribute("allure.story:About_page_verification")]
-        public async global::System.Threading.Tasks.Task AboutPage()
+        [global::NUnit.Framework.CategoryAttribute("allure.story:Cut_to_clipboard")]
+        public async global::System.Threading.Tasks.Task Cut()
         {
             string[] tagsOfScenario = new string[] {
                     "ui",
-                    "allure.story:About_page_verification"};
+                    "allure.story:Cut_to_clipboard"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "2";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("About page", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Cut", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
             this.ScenarioInitialize(scenarioInfo, ruleInfo);

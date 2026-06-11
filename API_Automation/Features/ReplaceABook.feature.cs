@@ -21,15 +21,19 @@ namespace API_Automation.Features
     [global::NUnit.Framework.DescriptionAttribute("Replace a book via Bookstore API")]
     [global::NUnit.Framework.FixtureLifeCycleAttribute(global::NUnit.Framework.LifeCycle.InstancePerTestCase)]
     [global::NUnit.Framework.CategoryAttribute("api")]
+    [global::NUnit.Framework.CategoryAttribute("smoke")]
     public partial class ReplaceABookViaBookstoreAPIFeature
     {
         
         private global::Reqnroll.ITestRunner testRunner;
         
         private static string[] featureTags = new string[] {
-                "api"};
+                "api",
+                "smoke"};
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Replace a book via Bookstore API", null, global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Replace a book via Bookstore API", "  As a registered user\r\n  I want to search for available books and manage my book" +
+                " list\r\n  So that I can replace a book in my collection with another one using th" +
+                "e Bookstore API", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
 #line 1 "ReplaceABook.feature"
 #line hidden
@@ -120,7 +124,7 @@ namespace API_Automation.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Verify that a user can replace a book", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 4
+#line 8
   this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -130,22 +134,22 @@ namespace API_Automation.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 5
+#line 9
     await testRunner.GivenAsync("A user is created and authorized", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 6
+#line 10
     await testRunner.WhenAsync("I get all books", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 7
+#line 11
     await testRunner.AndAsync("I add the first book to user\'s list", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 8
+#line 12
     await testRunner.ThenAsync("User has only one book and it matches the added one", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 9
+#line 13
     await testRunner.WhenAsync("I replace the book with the second one", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 10
+#line 14
     await testRunner.ThenAsync("The user\'s book list contains only the replaced book", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }

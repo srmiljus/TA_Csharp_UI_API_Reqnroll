@@ -17,4 +17,3 @@ namespace API_Automation.Models.Response
         public string Result { get; set; }
     }
 }
-

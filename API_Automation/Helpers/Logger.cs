@@ -23,7 +23,7 @@ namespace API_Automation.Helpers
             }
         }
 
-   
+
         public static void LogWarning(string message)
         {
             TestContext.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] WARNING: {message}");

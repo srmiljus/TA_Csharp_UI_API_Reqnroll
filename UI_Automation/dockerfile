@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+WORKDIR /app
+COPY . .
+
+WORKDIR /app/UI_Automation
+
+RUN dotnet restore
+RUN dotnet build -c Release
+
+ENV USE_REMOTE=true
+ENV SELENIUM_REMOTE_URL=http://selenium:4444/wd/hub
+
+ENTRYPOINT ["dotnet", "test", "UI_Automation.csproj", "-c", "Release"]
